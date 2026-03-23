@@ -2,8 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
-import { loadConfig } from '../config/index.js';
-import { createLogger } from '../logger/index.js';
+import dotenv from 'dotenv';
 
 const { Pool } = pg;
 
@@ -59,12 +58,16 @@ export async function runMigrations(connectionString: string, logger?: { info: F
   }
 }
 
-// Allow running as standalone script
+// Allow running as standalone script — only needs DATABASE_URL
 const isMain = process.argv[1] && fileURLToPath(import.meta.url).includes(process.argv[1].replace(/\.js$/, ''));
 if (isMain) {
-  const config = loadConfig();
-  const logger = createLogger(config.logLevel);
-  runMigrations(config.databaseUrl, logger)
+  dotenv.config();
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.error('DATABASE_URL environment variable is required');
+    process.exit(1);
+  }
+  runMigrations(databaseUrl)
     .then(() => process.exit(0))
     .catch((err) => {
       console.error('Migration failed:', err);
