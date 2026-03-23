@@ -2,6 +2,7 @@ import { BorshCoder } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { createHash } from 'crypto';
 import type { NormalizedIdl, NormalizedAccount } from '../idl/normalizer.js';
+import { adaptIdlForCoder } from '../idl/adapter.js';
 import type { SolanaClient } from '../solana/client.js';
 import type { Logger } from '../logger/index.js';
 
@@ -36,7 +37,8 @@ export class AccountDecoder {
 
   private initCoder(): void {
     try {
-      this.coder = new BorshCoder(this.idl.raw as any);
+      const adaptedIdl = adaptIdlForCoder(this.idl.raw);
+      this.coder = new BorshCoder(adaptedIdl as any);
 
       for (const acc of this.idl.accounts) {
         if (acc.discriminator) {

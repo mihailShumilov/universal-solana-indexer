@@ -3,31 +3,37 @@ import { configSchema, type AppConfig } from './schema.js';
 
 dotenv.config();
 
+/** Treat empty strings as undefined so .env files with KEY= work correctly. */
+function env(key: string): string | undefined {
+  const val = process.env[key];
+  return val === '' || val === undefined ? undefined : val;
+}
+
 export function loadConfig(): AppConfig {
   const raw = {
-    nodeEnv: process.env.NODE_ENV,
-    port: process.env.PORT,
-    logLevel: process.env.LOG_LEVEL,
-    databaseUrl: process.env.DATABASE_URL,
-    solanaRpcHttpUrl: process.env.SOLANA_RPC_HTTP_URL,
-    solanaRpcWsUrl: process.env.SOLANA_RPC_WS_URL,
-    solanaProgramId: process.env.SOLANA_PROGRAM_ID,
-    idlSourceType: process.env.IDL_SOURCE_TYPE,
-    idlFilePath: process.env.IDL_FILE_PATH,
-    idlAccountAddress: process.env.IDL_ACCOUNT_ADDRESS,
-    indexerMode: process.env.INDEXER_MODE,
-    batchStartSlot: process.env.BATCH_START_SLOT || undefined,
-    batchEndSlot: process.env.BATCH_END_SLOT || undefined,
-    batchSignatures: process.env.BATCH_SIGNATURES || undefined,
-    batchSize: process.env.BATCH_SIZE,
-    realtimeConfirmation: process.env.REALTIME_CONFIRMATION,
-    backfillEnabled: process.env.BACKFILL_ENABLED,
-    rpcMaxRetries: process.env.RPC_MAX_RETRIES,
-    rpcInitialBackoffMs: process.env.RPC_INITIAL_BACKOFF_MS,
-    rpcMaxBackoffMs: process.env.RPC_MAX_BACKOFF_MS,
-    checkpointCommitInterval: process.env.CHECKPOINT_COMMIT_INTERVAL,
-    pageSizeDefault: process.env.PAGE_SIZE_DEFAULT,
-    pageSizeMax: process.env.PAGE_SIZE_MAX,
+    nodeEnv: env('NODE_ENV'),
+    port: env('PORT'),
+    logLevel: env('LOG_LEVEL'),
+    databaseUrl: env('DATABASE_URL'),
+    solanaRpcHttpUrl: env('SOLANA_RPC_HTTP_URL'),
+    solanaRpcWsUrl: env('SOLANA_RPC_WS_URL'),
+    solanaProgramId: env('SOLANA_PROGRAM_ID'),
+    idlSourceType: env('IDL_SOURCE_TYPE'),
+    idlFilePath: env('IDL_FILE_PATH'),
+    idlAccountAddress: env('IDL_ACCOUNT_ADDRESS'),
+    indexerMode: env('INDEXER_MODE'),
+    batchStartSlot: env('BATCH_START_SLOT'),
+    batchEndSlot: env('BATCH_END_SLOT'),
+    batchSignatures: env('BATCH_SIGNATURES'),
+    batchSize: env('BATCH_SIZE'),
+    realtimeConfirmation: env('REALTIME_CONFIRMATION'),
+    backfillEnabled: env('BACKFILL_ENABLED'),
+    rpcMaxRetries: env('RPC_MAX_RETRIES'),
+    rpcInitialBackoffMs: env('RPC_INITIAL_BACKOFF_MS'),
+    rpcMaxBackoffMs: env('RPC_MAX_BACKOFF_MS'),
+    checkpointCommitInterval: env('CHECKPOINT_COMMIT_INTERVAL'),
+    pageSizeDefault: env('PAGE_SIZE_DEFAULT'),
+    pageSizeMax: env('PAGE_SIZE_MAX'),
   };
 
   const result = configSchema.safeParse(raw);

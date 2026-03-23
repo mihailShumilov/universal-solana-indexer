@@ -1,6 +1,7 @@
 import { BorshCoder } from '@coral-xyz/anchor';
 import bs58 from 'bs58';
 import type { NormalizedIdl } from '../idl/normalizer.js';
+import { adaptIdlForCoder } from '../idl/adapter.js';
 import type { Logger } from '../logger/index.js';
 import type { ParsedTransactionWithMeta } from '@solana/web3.js';
 
@@ -33,7 +34,8 @@ export class InstructionDecoder {
 
   private initCoder(): void {
     try {
-      this.coder = new BorshCoder(this.idl.raw as any);
+      const adaptedIdl = adaptIdlForCoder(this.idl.raw);
+      this.coder = new BorshCoder(adaptedIdl as any);
 
       // Build discriminator map for fast lookup
       for (const ix of this.idl.instructions) {
