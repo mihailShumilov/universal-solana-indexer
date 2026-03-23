@@ -36,11 +36,12 @@ export async function createApi(deps: ApiDeps) {
   await app.register(schemaRoute, { prefix: '/schema' });
 
   // Global error handler
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: Error & { statusCode?: number }, request, reply) => {
     deps.logger.error({ err: error, url: request.url }, 'Request error');
-    reply.status(error.statusCode || 500).send({
+    const statusCode = error.statusCode || 500;
+    reply.status(statusCode).send({
       error: error.message || 'Internal Server Error',
-      statusCode: error.statusCode || 500,
+      statusCode,
     });
   });
 

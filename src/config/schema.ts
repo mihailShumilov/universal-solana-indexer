@@ -36,7 +36,7 @@ export const configSchema = z
     batchSize: positiveInt.default(50),
 
     // Realtime Config
-    realtimeConfirmation: z.enum(['processed', 'confirmed', 'finalized']).default('confirmed'),
+    realtimeConfirmation: z.enum(['confirmed', 'finalized']).default('confirmed'),
     backfillEnabled: z
       .string()
       .default('true')

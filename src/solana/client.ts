@@ -5,6 +5,7 @@ import {
   type ParsedTransactionWithMeta,
   type AccountInfo,
   type Commitment,
+  type Finality,
 } from '@solana/web3.js';
 import { withRetry, type RetryOptions } from '../retry/index.js';
 import type { Logger } from '../logger/index.js';
@@ -48,7 +49,7 @@ export class SolanaClient {
       until?: string;
       minContextSlot?: number;
     },
-    commitment?: Commitment
+    commitment?: Finality
   ): Promise<ConfirmedSignatureInfo[]> {
     return withRetry(
       () => this.connection.getSignaturesForAddress(address, options, commitment),
@@ -58,7 +59,7 @@ export class SolanaClient {
 
   async getParsedTransaction(
     signature: string,
-    commitment: Commitment = 'confirmed'
+    commitment: Finality = 'confirmed'
   ): Promise<ParsedTransactionWithMeta | null> {
     return withRetry(
       () => this.connection.getParsedTransaction(signature, { maxSupportedTransactionVersion: 0, commitment }),
@@ -68,7 +69,7 @@ export class SolanaClient {
 
   async getParsedTransactions(
     signatures: string[],
-    commitment: Commitment = 'confirmed'
+    commitment: Finality = 'confirmed'
   ): Promise<(ParsedTransactionWithMeta | null)[]> {
     return withRetry(
       () => this.connection.getParsedTransactions(
@@ -106,9 +107,9 @@ export class SolanaClient {
           transactionDetails: 'signatures',
           rewards: false,
           maxSupportedTransactionVersion: 0,
-        });
+        }) as any;
         if (!block) return [];
-        return block.signatures;
+        return block.signatures || [];
       },
       { ...this.retryOpts, label: `getBlockSignatures:${slot}` }
     );

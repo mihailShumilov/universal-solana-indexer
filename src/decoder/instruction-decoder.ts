@@ -123,7 +123,7 @@ export class InstructionDecoder {
               instructionIndex: index,
               isInnerInstruction: isInner,
               accounts,
-              decodedArgs: this.serializeArgs(decoded.data),
+              decodedArgs: this.serializeArgs(decoded.data as Record<string, unknown>),
               rawData,
             };
           }
